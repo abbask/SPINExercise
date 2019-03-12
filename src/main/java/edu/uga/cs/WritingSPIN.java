@@ -82,7 +82,7 @@ public class WritingSPIN {
 				subjectString = "<" + FmtUtils.stringForNode(subject.asNode(), (SerializationContext) null)
 						+ ">";
 
-			if (stmt.getPredicate().isURIResource())
+			if (predicate.isURIResource())
 				predicateString = FmtUtils.stringForNode(predicate.asNode(), (SerializationContext) null);
 			else if (stmt.getPredicate().isLiteral())
 				predicateString = FmtUtils.stringForNode(predicate.asNode(), (SerializationContext) null);
@@ -90,7 +90,7 @@ public class WritingSPIN {
 				predicateString = "<"
 						+ FmtUtils.stringForNode(predicate.asNode(), (SerializationContext) null) + ">";
 
-			if (stmt.getObject().isURIResource())
+			if (object.isURIResource())
 				objectString = FmtUtils.stringForNode(object.asNode(), (SerializationContext) null);
 			else if (stmt.getObject().isLiteral())
 				objectString = FmtUtils.stringForNode(object.asNode(), (SerializationContext) null);
@@ -103,7 +103,7 @@ public class WritingSPIN {
 			// sb.append(FmtUtils.stringForTriple(stmt.asTriple())+ ".\n");
 
 		}
-		 System.out.println(sb.toString());
+		//System.out.println(sb.toString());
 
 		String updateString = "PREFIX owl:<http://www.w3.org/2002/07/owl#> PREFIX oscar: <http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#>";
 
