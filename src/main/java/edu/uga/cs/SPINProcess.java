@@ -96,11 +96,12 @@ public class SPINProcess {
 		String spURI = "http://spinrdf.org/sp#";
 		String oscarURI = oGRAPH + "#";
 		// resource stored in Virtuoso http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#testCase
-		/*
-		 * 
+		/* 
 		 * 	select distinct ?p ?o where {<http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#testCase> ?p ?o} LIMIT 100
-		 * 
-		 */
+		 * 	select distinct ?p ?o where {<http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#testCaseSS> ?p ?o} LIMIT 100
+		 *	select distinct ?s ?o where { ?s <http://spinrdf.org/sp#subject> ?o } LIMIT 100
+		 *	(example)select distinct ?p ?o where { <_:c654a24e-f731-4348-ad7e-de97976d080d> ?p ?o } LIMIT 100
+		*/
 						
 		Model model = ModelFactory.createDefaultModel();
 		model.setNsPrefix("sp", spURI);
@@ -115,12 +116,11 @@ public class SPINProcess {
 			
 		Resource selectResource =  model.createResource(spURI + ":Select");
 		model.removeAll();
-		//System.out.println("select: " + selectResource);
+
 		
 		Resource resource  = model.createResource(oscarURI + "testCaseSS");
 		
 		Property p = model.createProperty(oscarURI + "queryBy");
-		//System.out.println("r: " + resource);
 		
 		resource.addProperty(p, selectResource);	
 				
