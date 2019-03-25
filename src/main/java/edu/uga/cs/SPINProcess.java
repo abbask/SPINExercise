@@ -22,6 +22,15 @@ public class SPINProcess {
 
 	public static void main(String[] args) {
 
+		printToConsole();
+				
+	}
+	
+	public static void storeToEndpoint() {
+		
+	}
+	
+	public static void printToConsole() {
 		SPINModuleRegistry.get().init();
 		
 		String spURI = "http://spinrdf.org/sp#";
@@ -52,7 +61,6 @@ public class SPINProcess {
 		Select sparqlQuery = (Select) arq2SPIN.createQuery( arqQuery, null );
 
 		model.write( System.out, FileUtils.langXMLAbbrev );
-		
 	}
 	
 	public static void listAllResources(Resource r) {
