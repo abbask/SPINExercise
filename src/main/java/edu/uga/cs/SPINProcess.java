@@ -22,13 +22,21 @@ import org.topbraid.spin.system.SPINModuleRegistry;
 
 public class SPINProcess {
 	
+	// resource stored in Virtuoso http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#testCase
+			/* 
+			 * 	select distinct ?p ?o where {<http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#testCase> ?p ?o} LIMIT 100
+			 * 	select distinct ?p ?o where {<http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#testCaseSS> ?p ?o} LIMIT 100
+			 *	select distinct ?s ?o where { ?s <http://spinrdf.org/sp#subject> ?o } LIMIT 100
+			 *	(example)select distinct ?p ?o where { <_:c654a24e-f731-4348-ad7e-de97976d080d> ?p ?o } LIMIT 100
+			*/
+	
 	final static String ENDPOINT = "http://localhost:8890/sparql";
 	final static String oGRAPH = "http://www.semanticweb.org/abbas/ontologies/2015/2/oscar";
 
 	public static void main(String[] args) {
 
 		Model m = printToConsole();
-		storeToEndpoint(m);
+		//storeToEndpoint(m);
 	}
 	
 	public static void storeToEndpoint(Model m) {
@@ -95,26 +103,20 @@ public class SPINProcess {
 		
 		String spURI = "http://spinrdf.org/sp#";
 		String oscarURI = oGRAPH + "#";
-		// resource stored in Virtuoso http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#testCase
-		/* 
-		 * 	select distinct ?p ?o where {<http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#testCase> ?p ?o} LIMIT 100
-		 * 	select distinct ?p ?o where {<http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#testCaseSS> ?p ?o} LIMIT 100
-		 *	select distinct ?s ?o where { ?s <http://spinrdf.org/sp#subject> ?o } LIMIT 100
-		 *	(example)select distinct ?p ?o where { <_:c654a24e-f731-4348-ad7e-de97976d080d> ?p ?o } LIMIT 100
-		*/
+		
 						
 		Model model = ModelFactory.createDefaultModel();
 		model.setNsPrefix("sp", spURI);
 		model.setNsPrefix("oscar",oscarURI);
 		
-		String query = "select distinct ?Concept where {?s ?p ?s} LIMIT 11002";
+		String query = "select distinct ?Concept where {?s ?p ?o. ?s a <sp:something>} LIMIT 11002";
 		Query arqQuery = ARQFactory.get().createQuery(model, query); // convert string to Query
 		
 		ARQ2SPIN arq2SPIN = new ARQ2SPIN(model); // creates var2Resources.
 		arq2SPIN.createQuery(arqQuery, null);
 			
 			
-		Resource selectResource =  model.createResource(spURI + ":Select");
+		Resource selectResource =  model.createResource(spURI + "Select");
 		model.removeAll();
 
 		
