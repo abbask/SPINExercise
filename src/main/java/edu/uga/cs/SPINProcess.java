@@ -4,10 +4,15 @@ import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
-
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.apache.jena.rdfconnection.RDFConnectionRemote;
+import org.apache.jena.rdfconnection.RDFConnectionRemoteBuilder;
+import org.apache.jena.sparql.serializer.SerializationContext;
+import org.apache.jena.sparql.util.FmtUtils;
 import org.apache.jena.util.FileUtils;
 
 import org.topbraid.spin.arq.ARQ2SPIN;
@@ -22,25 +27,86 @@ public class SPINProcess {
 
 	public static void main(String[] args) {
 
-		printToConsole();
-				
+		Model m = printToConsole();
+		storeToEndpoint(m);
 	}
 	
-	public static void storeToEndpoint() {
-		
+	public static void storeToEndpoint(Model m) {
+		StringBuilder sb = new StringBuilder();
+
+		StmtIterator iterStmt = m.listStatements();
+		while (iterStmt.hasNext()) {
+			Statement stmt = iterStmt.next();
+						
+			RDFNode subject = stmt.getSubject();
+			RDFNode predicate = stmt.getPredicate();
+			RDFNode object = stmt.getObject();
+			
+			String subjectString;
+			String predicateString;
+			String objectString;
+
+			if (subject.isURIResource())
+				subjectString = FmtUtils.stringForNode(subject.asNode(), (SerializationContext) null);
+			else if(subject.isLiteral())
+				subjectString = FmtUtils.stringForNode(subject.asNode(), (SerializationContext) null);
+			else 				
+				subjectString = "<" + FmtUtils.stringForNode(subject.asNode(), (SerializationContext) null)
+						+ ">";
+
+			if (predicate.isURIResource())
+				predicateString = FmtUtils.stringForNode(predicate.asNode(), (SerializationContext) null);
+			else if (stmt.getPredicate().isLiteral())
+				predicateString = FmtUtils.stringForNode(predicate.asNode(), (SerializationContext) null);
+			else
+				predicateString = "<"
+						+ FmtUtils.stringForNode(predicate.asNode(), (SerializationContext) null) + ">";
+
+			if (object.isURIResource())
+				objectString = FmtUtils.stringForNode(object.asNode(), (SerializationContext) null);
+			else if (stmt.getObject().isLiteral())
+				objectString = FmtUtils.stringForNode(object.asNode(), (SerializationContext) null);
+			else
+				objectString = "<" + FmtUtils.stringForNode(object.asNode(), (SerializationContext) null)
+						+ ">";
+
+			sb.append(subjectString + " " + predicateString + " " + objectString + ".\n");
+
+		}
+
+		String updateString = "PREFIX owl:<http://www.w3.org/2002/07/owl#> PREFIX oscar: <http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#>";
+
+		updateString += "INSERT DATA { GRAPH <" + oGRAPH + "> { " + sb.toString() + "} }";
+
+		System.out.println(updateString);
+		RDFConnectionRemoteBuilder builder = RDFConnectionRemote.create().destination(ENDPOINT)
+				.updateEndpoint("sparql");
+
+		try (RDFConnection conn = builder.build()) {
+			conn.update(updateString);
+			System.out.println("Updated.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public static void printToConsole() {
+	public static Model printToConsole() {
 		SPINModuleRegistry.get().init();
 		
 		String spURI = "http://spinrdf.org/sp#";
 		String oscarURI = oGRAPH + "#";
+		// resource stored in Virtuoso http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#testCase
+		/*
+		 * 
+		 * 	select distinct ?p ?o where {<http://www.semanticweb.org/abbas/ontologies/2015/2/oscar#testCase> ?p ?o} LIMIT 100
+		 * 
+		 */
 						
 		Model model = ModelFactory.createDefaultModel();
 		model.setNsPrefix("sp", spURI);
 		model.setNsPrefix("oscar",oscarURI);
 		
-		String query = "select distinct ?Concept where {[] a ?Concept} LIMIT 100";
+		String query = "select distinct ?Concept where {?s ?p ?s} LIMIT 11002";
 		Query arqQuery = ARQFactory.get().createQuery(model, query); // convert string to Query
 		
 		ARQ2SPIN arq2SPIN = new ARQ2SPIN(model); // creates var2Resources.
@@ -51,7 +117,7 @@ public class SPINProcess {
 		model.removeAll();
 		//System.out.println("select: " + selectResource);
 		
-		Resource resource  = model.createResource(oscarURI + "testCase");
+		Resource resource  = model.createResource(oscarURI + "testCaseSS");
 		
 		Property p = model.createProperty(oscarURI + "queryBy");
 		//System.out.println("r: " + resource);
@@ -61,6 +127,8 @@ public class SPINProcess {
 		Select sparqlQuery = (Select) arq2SPIN.createQuery( arqQuery, null );
 
 		model.write( System.out, FileUtils.langXMLAbbrev );
+		
+		return model;
 	}
 	
 	public static void listAllResources(Resource r) {
