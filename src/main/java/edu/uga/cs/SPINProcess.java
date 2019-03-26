@@ -1,5 +1,6 @@
 package edu.uga.cs;
 
+import org.apache.jena.ontology.Individual;
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -14,11 +15,12 @@ import org.apache.jena.rdfconnection.RDFConnectionRemoteBuilder;
 import org.apache.jena.sparql.serializer.SerializationContext;
 import org.apache.jena.sparql.util.FmtUtils;
 import org.apache.jena.util.FileUtils;
-
+import org.apache.jena.vocabulary.RDF;
 import org.topbraid.spin.arq.ARQ2SPIN;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.system.SPINModuleRegistry;
+import org.topbraid.spin.vocabulary.SP;
 
 public class SPINProcess {
 	
@@ -36,7 +38,7 @@ public class SPINProcess {
 	public static void main(String[] args) {
 
 		Model m = printToConsole();
-		//storeToEndpoint(m);
+		storeToEndpoint(m);
 	}
 	
 	public static void storeToEndpoint(Model m) {
@@ -113,22 +115,36 @@ public class SPINProcess {
 		Query arqQuery = ARQFactory.get().createQuery(model, query); // convert string to Query
 		
 		ARQ2SPIN arq2SPIN = new ARQ2SPIN(model); // creates var2Resources.
-		arq2SPIN.createQuery(arqQuery, null);
-			
-			
-		Resource selectResource =  model.createResource(spURI + "Select");
-		model.removeAll();
-
+		Resource root = model.createResource();
 		
-		Resource resource  = model.createResource(oscarURI + "testCaseSS");
+		arq2SPIN.createQuery(arqQuery, oscarURI + "tc14Query");
+	
+		
+		for (StmtIterator stmts = model.listStatements( null,RDF.type, SP.Select ); stmts.hasNext(); ) {
+			
+			Statement stmt = stmts.next();
+			root = stmt.getSubject();
+			Resource p = stmt.getPredicate();
+			RDFNode o = stmt.getObject();
+			System.out.println(root + " " + p + " " + o);
+			System.out.println("Root: " + root);
+		} 
+		
+		
+		
+		if (root == null)
+			throw new NullPointerException();
+//		model.removeAll();
+		//System.out.println(selectResource);
+		//System.out.println(model.getResource(spURI + "Select"));
+		
+		Resource resource  = model.createResource(oscarURI + "tc014");
 		
 		Property p = model.createProperty(oscarURI + "queryBy");
 		
-		resource.addProperty(p, selectResource);	
-				
-		Select sparqlQuery = (Select) arq2SPIN.createQuery( arqQuery, null );
+		resource.addProperty(p, root);					
 
-		model.write( System.out, FileUtils.langXMLAbbrev );
+		//model.write( System.out, FileUtils.langXMLAbbrev );
 		
 		return model;
 	}
