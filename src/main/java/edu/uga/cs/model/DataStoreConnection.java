@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionRemote;
@@ -42,7 +43,7 @@ public class DataStoreConnection {
 		
 	}
 
-	private ArrayList<String> executeQuery(String queryString) {
+	private void executeQuery(String queryString) {
 		
 		RDFConnectionRemoteBuilder builder = RDFConnectionRemote.create().destination(serviceURI)
 				.updateEndpoint("sparql");
