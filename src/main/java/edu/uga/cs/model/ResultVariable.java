@@ -23,34 +23,48 @@ public class ResultVariable {
 	}
 	
 	private void findVariables(RDFNode n) {
-		String queryString = "Select ?p ?o Where { <" + node.toString() + "> ?p ?o} ";
-
-		DataStoreConnection conn = new DataStoreConnection();
-		List<QuerySolution> list = conn.executeQuery(queryString);
-
-		for (QuerySolution q : list)
-		{
-//				System.out.println(q.getResource("p").getLocalName());
-			if (q.getResource("p").getLocalName().equals("first")) {
-				retrieveSPARQLClauses(q);					
-			}
-			else if (q.getResource("p").getLocalName().equals("rest")){	
-				System.out.println(q.getResource("o").getLocalName());
-				if(!q.getResource("o").getLocalName().equals("nil")) {
-					findVariables(q.get("o"));
+		String queryString = "Select ?p ?o Where { <" + n.toString() + "> ?p ?o} ";
+		
+		
+		try {
+			System.out.println( queryString);
+			DataStoreConnection conn = new DataStoreConnection();
+			List<QuerySolution> list = conn.executeQuery(queryString);
+			//System.out.println("Result");
+	
+			for (QuerySolution q : list)
+			{
+				if (q.getResource("p").getLocalName().equals("first")) {
+					retrieveSPARQLClauses(q.get("o"));					
 				}
-			}
-		}	
+				else if (q.getResource("p").getLocalName().equals("rest")){	
+					if(!q.getResource("o").getLocalName().equals("nil")) {
+						findVariables(q.get("o"));
+					}
+				}
+			}	
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	private void retrieveSPARQLClauses(QuerySolution querySolution) {
-		Resource predicate = querySolution.get("p").asResource();
+	private void retrieveSPARQLClauses(RDFNode n) {
+		String queryString = "Select ?p ?o Where { <" + n.toString() + "> ?p ?o} ";
+		System.out.println(queryString);
 		
-		RDFNode object = querySolution.get("o");
+		DataStoreConnection conn = new DataStoreConnection();
+		List<QuerySolution> list = conn.executeQuery(queryString);
+		//System.out.println("Re: Result");
+		QuerySolution q = list.get(0);
+		Resource predicate = q.get("p").asResource();
+		
+		RDFNode object = q.get("o");
 		
 		if (predicate.getLocalName().equals("varName"))
 			resultVariables += "?" + object.asLiteral().getString(); 			
-		
+		else
+			System.out.println("NOT");
 		
 	}
 

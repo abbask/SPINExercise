@@ -20,6 +20,7 @@ public class DataStoreConnection {
 	
 	private String serviceURI = "http://localhost:8890/sparql/";
 	private String graphName = "<http://prokino.uga.edu>";	
+	RDFConnectionRemoteBuilder builder;
 	
 	public String getServiceURI() {
 		return serviceURI;
@@ -38,7 +39,8 @@ public class DataStoreConnection {
 	}
 	
 	public DataStoreConnection() {
-		
+		builder = RDFConnectionRemote.create().destination(serviceURI)
+				.updateEndpoint("sparql");
 	}
 
 	public DataStoreConnection(String serviceURI, String graphName) {
@@ -46,7 +48,8 @@ public class DataStoreConnection {
 			this.serviceURI = serviceURI;
 		if (graphName != null)
 			this.graphName = graphName;
-		
+		builder = RDFConnectionRemote.create().destination(serviceURI)
+				.updateEndpoint("sparql");
 	}
 	
 	private static void materialize(QuerySolution qs) {
@@ -57,14 +60,13 @@ public class DataStoreConnection {
     }
 
 	public List<QuerySolution> executeQuery(String queryString) {
-		
-		RDFConnectionRemoteBuilder builder = RDFConnectionRemote.create().destination(serviceURI)
-				.updateEndpoint("sparql");
-				
+							
 		List<QuerySolution> list = new ArrayList<>() ;
 		try ( RDFConnection conn = builder.build() ) { 
-			//conn.queryResultSet(queryString, ResultSetFormatter::toList);
-			ResultSet rs = conn.query(queryString).execSelect();
+			
+//			ResultSet rs = conn.query(queryString).execSelect();
+			QueryExecution qe = conn.query(queryString);
+			ResultSet rs = qe.execSelect();
 			
 	        for ( ; rs.hasNext() ; ) {
 	            QuerySolution result = rs.nextSolution() ;
@@ -73,10 +75,11 @@ public class DataStoreConnection {
 	        }
 	        
 		
-            
+	       
         } catch (Exception e) {
 			e.printStackTrace();
 		}
+
 
 		return list;
 	}	
