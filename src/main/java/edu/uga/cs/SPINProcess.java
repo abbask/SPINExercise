@@ -111,13 +111,13 @@ public class SPINProcess {
 		model.setNsPrefix("sp", spURI);
 		model.setNsPrefix("oscar",oscarURI);
 		
-		String query = "select distinct ?Concept where {?s ?p ?o. ?s a <sp:something>} LIMIT 11002";
+		String query = "select distinct ?s ?p ?am where {?s ?p ?am. ?s a <sp:something>} LIMIT 11002";
 		Query arqQuery = ARQFactory.get().createQuery(model, query); // convert string to Query
 		
 		ARQ2SPIN arq2SPIN = new ARQ2SPIN(model); // creates var2Resources.
 		Resource root = model.createResource();
 		
-		arq2SPIN.createQuery(arqQuery, oscarURI + "tc14Query");
+		arq2SPIN.createQuery(arqQuery, oscarURI + "tc22Query");
 	
 		
 		for (StmtIterator stmts = model.listStatements( null,RDF.type, SP.Select ); stmts.hasNext(); ) {
@@ -138,7 +138,7 @@ public class SPINProcess {
 		//System.out.println(selectResource);
 		//System.out.println(model.getResource(spURI + "Select"));
 		
-		Resource resource  = model.createResource(oscarURI + "tc014");
+		Resource resource  = model.createResource(oscarURI + "tc22Query");
 		
 		Property p = model.createProperty(oscarURI + "queryBy");
 		
