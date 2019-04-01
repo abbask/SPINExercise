@@ -23,15 +23,17 @@ public class ResultVariable {
 	}
 	
 	private void findVariables(RDFNode n) {
-		String queryString = "Select ?p ?o Where { <" + n.toString() + "> ?p ?o} ";
+		String queryString = "Select ?p ?o Where { <" + n.toString() + "> ?p ?o} ";		
+		
 		
 		
 		try {
-			System.out.println( queryString);
 			DataStoreConnection conn = new DataStoreConnection();
+			System.out.println( queryString);
+			
 			List<QuerySolution> list = conn.executeQuery(queryString);
-			//System.out.println("Result");
-	
+			
+			System.out.println(list.size());
 			for (QuerySolution q : list)
 			{
 				if (q.getResource("p").getLocalName().equals("first")) {
@@ -47,6 +49,7 @@ public class ResultVariable {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
+
 	}
 	
 	private void retrieveSPARQLClauses(RDFNode n) {
