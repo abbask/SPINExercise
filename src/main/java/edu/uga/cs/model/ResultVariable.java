@@ -23,28 +23,25 @@ public class ResultVariable {
 	}
 	
 	private void findVariables(RDFNode n) {
-		String queryString = "Select ?p ?o Where { <" + n.toString() + "> ?p ?o} ";		
-		
-		
-		
+		//http://www.w3.org/1999/02/22-rdf-syntax-ns#first
+		//http://www.w3.org/1999/02/22-rdf-syntax-ns#rest
+		String nameSpace = "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> ";
+		String queryStringFirst = nameSpace + "Select ?o Where { <" + n.toString() + "> rdf:first ?o} ";		
+		String queryStringRest = nameSpace + "Select ?o Where { <" + n.toString() + "> rdf:rest ?o} ";
+				
 		try {
+			
 			DataStoreConnection conn = new DataStoreConnection();
-			System.out.println( queryString);
+			System.out.println(queryStringFirst);			
+			QuerySolution firstResult = conn.executeQuerySingleResult(queryStringFirst);
+			if (firstResult != null)
+				retrieveSPARQLClauses(firstResult.get("o"));
+			System.out.println(queryStringRest);
+			QuerySolution restResult = conn.executeQuerySingleResult(queryStringRest);
+			if (restResult != null)
+				if (!restResult.getResource("o").getLocalName().equals("nil"))
+					findVariables(restResult.get("o"));
 			
-			List<QuerySolution> list = conn.executeQuery(queryString);
-			
-			System.out.println(list.size());
-			for (QuerySolution q : list)
-			{
-				if (q.getResource("p").getLocalName().equals("first")) {
-					retrieveSPARQLClauses(q.get("o"));					
-				}
-				else if (q.getResource("p").getLocalName().equals("rest")){	
-					if(!q.getResource("o").getLocalName().equals("nil")) {
-						findVariables(q.get("o"));
-					}
-				}
-			}	
 		}
 		catch(Exception e) {
 			e.printStackTrace();

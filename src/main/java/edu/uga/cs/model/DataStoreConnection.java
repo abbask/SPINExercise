@@ -58,6 +58,31 @@ public class DataStoreConnection {
             RDFNode n = qs.get(vn) ;
         }
     }
+	
+	public QuerySolution executeQuerySingleResult(String queryString) {
+		
+		QuerySolution result = null;
+		try ( RDFConnection conn = builder.build() ) { 
+			
+//			ResultSet rs = conn.query(queryString).execSelect();
+			QueryExecution qe = conn.query(queryString);
+			ResultSet rs = qe.execSelect();
+			
+	        if (rs.hasNext()) {
+	            result = rs.nextSolution() ;
+	            //materialize(result);
+	            
+	        }
+	        
+		
+	       
+        } catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+		return result;
+	}
 
 	public List<QuerySolution> executeQuery(String queryString) {
 							
@@ -70,7 +95,7 @@ public class DataStoreConnection {
 			
 	        for ( ; rs.hasNext() ; ) {
 	            QuerySolution result = rs.nextSolution() ;
-	            materialize(result);
+	            //materialize(result);
 	            list.add(result) ;
 	        }
 	        
