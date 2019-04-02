@@ -73,7 +73,7 @@ public class DataStoreConnection {
 	            //materialize(result);
 	            
 	        }
-	        
+	        qe.close();
 		
 	       
         } catch (Exception e) {
@@ -99,7 +99,7 @@ public class DataStoreConnection {
 	            list.add(result) ;
 	        }
 	        
-		
+	        qe.close();
 	       
         } catch (Exception e) {
 			e.printStackTrace();

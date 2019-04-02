@@ -17,17 +17,19 @@ public class TestFive {
 
 	public static void main(String[] args) {
 		
-		//loopQuery();
+//		loopQuery();
+		for(int i= 0 ; i < 60 ; i++)
+			oneQuery();
 		/*oneQuery();
 		oneQuery();
 		oneQuery();
 		oneQuery();
 		oneQuery();
 		oneQuery();
-		*/
+		
 		for(int i= 0 ; i < 6 ; i++)
 			olderApproach();
-		
+		*/
 		
 	}
 	
@@ -44,6 +46,9 @@ public class TestFive {
 			list.add(result);
 			
 		}
+		
+		qexec.close();
+		
 		System.out.println(list.size());
 	}
 	
@@ -67,6 +72,9 @@ public class TestFive {
 				QuerySolution result = rs.nextSolution();
 				list.add(result);
 			}
+
+			qe.close();
+
 
 		} catch (Exception e) {
 			e.printStackTrace();
