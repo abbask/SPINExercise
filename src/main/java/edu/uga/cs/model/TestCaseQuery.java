@@ -52,7 +52,9 @@ public class TestCaseQuery {
 		
 		switch (predicate.getLocalName()) {
 		case "where":
-			System.out.println("should query for where");
+			WhereClause wc = new WhereClause(object);
+			where = wc.getClasue();			
+			System.out.println("WhereClause: " + where);
 			break;
 		case "resultVariables":
 			

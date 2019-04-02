@@ -117,8 +117,9 @@ public class SPINProcess {
 		ARQ2SPIN arq2SPIN = new ARQ2SPIN(model); // creates var2Resources.
 		Resource root = model.createResource();
 		
-		arq2SPIN.createQuery(arqQuery, oscarURI + "tc22Query");
-	
+		arq2SPIN.createQuery(arqQuery, oscarURI + "tc23Query");
+		
+		
 		
 		for (StmtIterator stmts = model.listStatements( null,RDF.type, SP.Select ); stmts.hasNext(); ) {
 			
@@ -138,7 +139,7 @@ public class SPINProcess {
 		//System.out.println(selectResource);
 		//System.out.println(model.getResource(spURI + "Select"));
 		
-		Resource resource  = model.createResource(oscarURI + "tc22Query");
+		Resource resource  = model.createResource(oscarURI + "tc23Query");
 		
 		Property p = model.createProperty(oscarURI + "queryBy");
 		
